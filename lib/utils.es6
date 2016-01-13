@@ -1,4 +1,3 @@
-var window = window || {};
 (function () {
   let Sand = window.Sand = window.Sand || {};
   let u = Sand.Utils = {};
@@ -33,7 +32,4 @@ var window = window || {};
       return this.pos;
     }
   }
-
-
-  module.exports = Sand.Utils;
 })();

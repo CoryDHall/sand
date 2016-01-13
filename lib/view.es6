@@ -23,6 +23,4 @@
       ctx.fillRect(0,0,cvs.width, cvs.height);
     }
   }
-
-  module.exports = Sand.View;
 })();

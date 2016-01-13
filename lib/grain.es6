@@ -10,7 +10,4 @@
       this.position = position || new su.Vector();
     }
   }
-
-
-  module.exports = Sand.Grain;
 })();

@@ -1,5 +1,5 @@
 describe("Sand Utils", function () {
-  var Utils = require('../../lib/min/utils.js');
+  var Utils = Sand.Utils;
 
   describe("Vectors", function () {
     it("should accept no arguments", function () {
