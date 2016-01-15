@@ -40,4 +40,38 @@ describe("Sand Utils", function () {
       });
     })
   });
+
+  describe("Colors", function () {
+    it("should accept hsl values", function () {
+      var color = new Utils.Color(120, 100, 50);
+      expect(color).not.toBeUndefined();
+    });
+    it("should accept hsla values", function () {
+      var color = new Utils.Color(120, 100, 50, 1);
+      expect(color).not.toBeUndefined();
+    });
+    it("should enforce valid input", function () {
+      function newColor(h, s, l, a) {
+        return function () {
+          new Utils.Color(h, s, l, a);
+        }
+      }
+      expect(newColor(120, 100, 50, 1)).not.toThrow();
+      expect(newColor(420, 100, 50, 1)).not.toThrow();
+      expect(newColor(120, 120, 50, 1)).toThrow();
+      expect(newColor(120, 100, 120, 1)).toThrow();
+      expect(newColor(120, 100, 50, 120)).toThrow();
+    });
+    describe("methods", function () {
+      it("should rotate hue");
+      it("should change saturation");
+      it("should change brightness");
+      it("should change opacity");
+      it("should return a string");
+      it("should allow setting via object");
+      it("should be invertable");
+      it("should mix with other colors");
+    });
+
+  })
 })

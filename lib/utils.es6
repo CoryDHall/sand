@@ -32,4 +32,17 @@
       return this.pos;
     }
   }
+
+  u.Color = class {
+    constructor(h, s, l, a=1) {
+      if(s < 0 || s > 100) throw new RangeError('saturation must be between 0 and 100');
+      if(l < 0 || l > 100) throw new RangeError('lightness must be between 0 and 100');
+      if(a < 0 || a > 1) throw new RangeError('alpha must be between 0 and 1');
+
+      this.h = h % 360;
+      this.s = s;
+      this.l = l;
+      this.a = a;
+    }
+  }
 })();
