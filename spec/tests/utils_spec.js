@@ -63,11 +63,34 @@ describe("Sand Utils", function () {
       expect(newColor(120, 100, 50, 120)).toThrow();
     });
     describe("methods", function () {
-      it("should rotate hue");
+      var red, blue, green;
+      beforeEach(function () {
+        red = new Utils.Color(0, 50, 50, 0.5);
+        blue = new Utils.Color(240, 50, 50, 0.5);
+        green = new Utils.Color(120, 50, 50);
+      });
+      it("should rotate hue", function () {
+        red.rotate(10);
+        expect(red.hue()).toEqual(10);
+
+        blue.rotate(360);
+        expect(blue.hue()).toEqual(240);
+
+        green.rotate(-180);
+        expect(green.hue()).toEqual(300);
+      });
       it("should change saturation");
       it("should change brightness");
       it("should change opacity");
-      it("should return a string");
+      it("should return a string", function () {
+        expect(red.toString()).toBe("hsla(0, 50%, 50%, 0.5)");
+        expect(blue.toString()).toBe("hsla(240, 50%, 50%, 0.5)");
+        expect(green.toString()).toBe("hsla(120, 50%, 50%, 1)");
+
+        expect("" + red).toBe("hsla(0, 50%, 50%, 0.5)");
+        expect("" + blue).toBe("hsla(240, 50%, 50%, 0.5)");
+        expect("" + green).toBe("hsla(120, 50%, 50%, 1)");
+      });
       it("should allow setting via object");
       it("should be invertable");
       it("should mix with other colors");

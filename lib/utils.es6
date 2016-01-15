@@ -31,6 +31,10 @@
     get() {
       return this.pos;
     }
+
+    toArray() {
+      return [this.pos[0], this.pos[1]];
+    }
   }
 
   u.Color = class {
@@ -39,10 +43,28 @@
       if(l < 0 || l > 100) throw new RangeError('lightness must be between 0 and 100');
       if(a < 0 || a > 1) throw new RangeError('alpha must be between 0 and 1');
 
-      this.h = h % 360;
-      this.s = s;
-      this.l = l;
-      this.a = a;
+      this._h = h % 360;
+      this._s = s;
+      this._l = l;
+      this._a = a;
+    }
+
+    hue(val=null) {
+      if (val) {
+        this._h = val % 360;
+        this._h += 360 * (this._h < 0);
+        return this;
+      }
+      return this._h;
+    }
+
+    rotate(amount) {
+      this.hue(this.hue() + amount);
+      return this;
+    }
+
+    toString() {
+      return `hsla(${this._h}, ${this._s}%, ${this._l}%, ${this._a})`;
     }
   }
 })();
