@@ -16,7 +16,7 @@
     draw() {
       let ctx = this.ctx, cvs = ctx.canvas;
       this.clear();
-      this._clearColor.rotate(0.1);
+      this._clearColor.rotate(11);
 
       (new Sand.Grain({
         position: (new su.Vector(Math.random() * cvs.width, Math.random() * cvs.height)),
