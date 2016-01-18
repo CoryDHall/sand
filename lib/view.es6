@@ -9,7 +9,8 @@
       this._width = this._container.clientWidth;
       this._height = this._container.clientHeight;
       this.setUp();
-      this._clearColor = new su.Color(0, 50, 50, 0.1);
+      this._clearColor = new su.Color(0, 50, 0, 0.0);
+      this._grainColor = new su.Color(0, 100, 50);
     }
 
     setUp() {
@@ -18,9 +19,26 @@
       this.cvs.setAttribute('height', this._height);
       this._container.appendChild(this.cvs);
       this.ctx = this.cvs.getContext('2d');
+
+      this._colorPicker = new Sand.ColorPicker();
+      this._container.appendChild(this._colorPicker.render().el());
+
+      this._container.addEventListener('colorchange', e => {
+        this._grainColor = this._colorPicker.getColor();
+      })
+
+      // this.form = document.createElement('')
     }
 
     start() {
+      this.cvs.addEventListener('mousemove', e => {
+        (new Sand.Grain({
+          position: (new su.Vector(e.offsetX, e.offsetY)),
+          size: (Math.random() * 25),
+          weight: 1,
+          color: this._grainColor
+        })).render(this.ctx);
+      });
       requestAnimationFrame(this.draw.bind(this));
     }
 
@@ -28,12 +46,6 @@
       let ctx = this.ctx, cvs = ctx.canvas;
       this.clear();
       this._clearColor.rotate(11);
-
-      (new Sand.Grain({
-        position: (new su.Vector(Math.random() * cvs.width, Math.random() * cvs.height)),
-        size: (Math.random() * 25),
-        weight: 1
-      })).render(ctx);
 
       requestAnimationFrame(this.draw.bind(this));
     }
