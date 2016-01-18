@@ -3,23 +3,39 @@
   <head>
     <meta charset="utf-8">
     <title>sand demo</title>
+    <style media="screen">
+      html, body {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        position: absolute;
+        width: 100%;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+      }
+      .sand-container {
+        position: absolute;
+        margin: 0 auto;
+        left: 25%;
+        right: 25%;
+        top: 25%;
+        bottom: 25%;
+      }
+    </style>
   </head>
   <body>
-    <canvas id="canvas" width="600" height="600"></canvas>
+    <div class="sand-container" id="sand-container"></div>
 
     <script src="lib/min/utils.js" charset="utf-8"></script>
     <script src="lib/min/grain.js" charset="utf-8"></script>
     <script src="lib/min/view.js" charset="utf-8"></script>
     <script type="text/javascript">
       (function () {
-        var canvas = document.getElementById('canvas');
-        var ctx = canvas.getContext('2d') || null;
         var Sand = window.Sand || {};
-
-        if (ctx) {
-          var view = new Sand.View(ctx);
-          view.start();
-        }
+        var view = new Sand.View(document.getElementById('sand-container'));
+        view.start();
       })();
     </script>
   </body>

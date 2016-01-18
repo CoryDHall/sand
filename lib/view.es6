@@ -4,9 +4,20 @@
   let su = Sand.Utils;
 
   let sv = Sand.View = class {
-    constructor(ctx) {
-      this.ctx = ctx;
+    constructor(container) {
+      this._container = container;
+      this._width = this._container.clientWidth;
+      this._height = this._container.clientHeight;
+      this.setUp();
       this._clearColor = new su.Color(0, 50, 50, 0.1);
+    }
+
+    setUp() {
+      this.cvs = document.createElement('canvas');
+      this.cvs.setAttribute('width', this._width);
+      this.cvs.setAttribute('height', this._height);
+      this._container.appendChild(this.cvs);
+      this.ctx = this.cvs.getContext('2d');
     }
 
     start() {
