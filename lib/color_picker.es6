@@ -43,14 +43,34 @@
       this._container.appendChild(this._hs);
       this._hsctx = this._hs.getContext('2d');
       this.updateHueField();
-      this._hs.addEventListener('click', this.pickHue.bind(this));
+      let mDown = false, oldOffset = 0;
+      this._hs.addEventListener('mousemove', e => {
+        if (!mDown) return;
+        let cHue = this.offset = (e.offsetX / this._width * 360);
+        // let cHue = (e.offsetX / this._width * 360);
+        // this.offset = oldOffset + cHue;
+        this.updateHueField();
+        this.updateValueField(cHue, 5);
+      });
+      this._hs.addEventListener('mouseup', e => {
+        if (oldOffset == this.offset) {
+          this.offset += (e.offsetX / this._width * 360);
+        }
+        this.pickHue(e);
+        mDown = false;
+      });
+      this._hs.addEventListener('mousedown', e => {
+        mDown = true;
+        oldOffset = this.offset;
+      });
     }
 
     updateHueField() {
       var currColor;
+      this.offset = this.offset || 1;
       let unit = this._width / 360;
       for (var h = 0; h < 360; h++) {
-        currColor = new su.Color(h, this.currSat, this.currLit);
+        currColor = new su.Color(h + this.offset, this.currSat, this.currLit);
         this._hsctx.fillStyle = currColor.toString();
         this._hsctx.fillRect(unit * h, 0, unit + 1, 50);
       }
@@ -61,10 +81,13 @@
     }
 
     pickHue(e) {
-      this.currHue = e.offsetX / this._width * 360;
+      this.currHue = this.offset;
+      // this.currHue = ((e.offsetX / this._width * 360) + this.offset) % 360;
+      // this.offset = this.currHue;
       this._color.hue(this.currHue);
       this.triggerEvent();
-      this.updateValueField();
+      this.updateValueField(this.currHue);
+      this.updateHueField();
     }
 
     createValueField() {
@@ -77,15 +100,16 @@
       this._vf.addEventListener('click', this.pickValue.bind(this));
     }
 
-    updateValueField() {
-      var currColor;
-      let unitX = this._width / 100;
-      let unitY = this._vfctx.canvas.height / 100;
-      for (var s = 0; s < 100; s++) {
-        for (var l = 0; l < 100; l++) {
-          currColor = new su.Color(this.currHue, s, (s + l) / 2);
+    updateValueField(hue=null, res=100) {
+      let unitX = this._width / res;
+      let unitY = this._vfctx.canvas.height / res;
+      let cHue = hue === null ? this.currHue : hue;
+      var currColor = new su.Color(cHue, 0, 0);
+      for (var s = 0; s <= 100; s+=100 / res) {
+        for (var l = 0; l <= 100; l+=100 / res) {
+          currColor.saturation(s).lightness((s + l) / 2);
           this._vfctx.fillStyle = currColor.toString();
-          this._vfctx.fillRect(unitX * s, unitY * l, unitX + 1, unitY + 1);
+          this._vfctx.fillRect(unitX * s / (100 / res), unitY * l / (100 / res), unitX + 1, unitY + 1);
         }
       }
     }

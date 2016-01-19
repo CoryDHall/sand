@@ -115,7 +115,7 @@
     invert() {
       let newColor = this.dup();
       newColor
-        .rotate(180)
+        .rotate(150)
         .lightness(100 - this._l);
       return newColor;
     }

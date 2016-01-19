@@ -35,9 +35,9 @@
       this._container.appendChild(this._fgColorPicker.render().el());
 
       this._bgColorPicker.el().addEventListener('colorchange', e => {
-        this._clearColor = new su.Color(0, 100, 0, 0.8);
-        this.clear();
+        // this._clearColor = new su.Color(0, 100, 0, 0.8);
         this._clearColor = this._bgColorPicker.getColor();
+        this.clear();
         this._clearColor.alpha(0.05);
       });
       this._fgColorPicker.el().addEventListener('colorchange', e => {
@@ -46,7 +46,7 @@
     }
 
     start() {
-      let mouseDown = false, trueCenter = this._center.dup(), trueWidth = this._width, widthState = {}, posState = {}, counterAdvance = 0.01;
+      let mouseDown = false, trueCenter = this._center.dup(), trueWidth = this._width, widthState = {}, posState = {}, counterAdvance = 0.005;
       let downEvent = (e => {
         e.preventDefault();
         mouseDown = true;
@@ -109,7 +109,9 @@
             this.grain.position.x(x + (this._width / 2.05) * Math.cos(this._height - gp * i * j / 600 + counter + i));
             this.ctx.translate(10 * j, 10 * j);
             this.grain.color.rotate(j * (i + 30) / 2);
+            this.ctx.beginPath();
             this.grain.render(this.ctx);
+            this.ctx.closePath();
             this.ctx.translate(10 * -j, 10 * -j);
           }
 
@@ -127,9 +129,11 @@
     clear(opacity=0.01) {
       let ctx = this.ctx, cvs = ctx.canvas;
       setTimeout(_ => {
-        ctx.drawImage(cvs, -1, -1, cvs.width + 2, cvs.height + 2);
         ctx.fillStyle = `${this._clearColor}`;
         ctx.fillRect(0,0,cvs.width, cvs.height);
+        var xDeg = (Date.now() / 2000) % 15 - 5;
+        var yDeg = (Date.now() / 3000) % 15 - 5;
+        ctx.drawImage(cvs, -xDeg/2, -yDeg/2, cvs.width + xDeg, cvs.height + yDeg);
       }, 0);
     }
   }

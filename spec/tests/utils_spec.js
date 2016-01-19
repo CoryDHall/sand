@@ -159,11 +159,11 @@ describe("Sand Utils", function () {
         it("returns the complementary color", function () {
           var black = new Utils.Color(0, 0, 0, 1);
           var white = new Utils.Color(180, 100, 100, 1);
-          expect("" + red.invert()).toBe("hsla(180, 50%, 50%, 0.5)");
-          expect("" + blue.invert()).toBe("hsla(60, 50%, 50%, 0.5)");
-          expect("" + green.invert()).toBe("hsla(300, 50%, 50%, 1)");
-          expect("" + black.invert()).toBe("hsla(180, 0%, 100%, 1)");
-          expect("" + white.invert()).toBe("hsla(0, 100%, 0%, 1)");
+          expect("" + red.invert()).toBe("hsla(150, 50%, 50%, 0.5)");
+          expect("" + blue.invert()).toBe("hsla(30, 50%, 50%, 0.5)");
+          expect("" + green.invert()).toBe("hsla(270, 50%, 50%, 1)");
+          expect("" + black.invert()).toBe("hsla(150, 0%, 100%, 1)");
+          expect("" + white.invert()).toBe("hsla(330, 100%, 0%, 1)");
         });
       });
       describe("mix()", function () {

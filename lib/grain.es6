@@ -1,7 +1,7 @@
 (function () {
   let Sand = window.Sand = window.Sand || {};
 
-  let su = Sand.Utils;
+  let su = Sand.Utils, twoPi = Math.PI * 2;
 
   Sand.Grain = class {
     constructor({
@@ -18,7 +18,8 @@
 
     render(ctx) {
       ctx.fillStyle = `${this.color}`;
-      ctx.fillRect(...this.position.toArray(), this.size, this.size);
+      ctx.arc(...this.position.toArray(), this.size / 2, 0, twoPi);
+      ctx.fill();
     }
 
     growBy(factor) {
