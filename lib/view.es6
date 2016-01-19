@@ -48,6 +48,7 @@
     start() {
       let mouseDown = false, trueCenter = this._center.dup(), trueWidth = this._width, widthState = {}, posState = {}, counterAdvance = 0.01;
       this.cvs.addEventListener('mousedown', e => {
+        e.preventDefault();
         mouseDown = true;
         widthState['end'] = true;
         posState['end'] = true;
@@ -63,6 +64,7 @@
         });
       });
       this.cvs.addEventListener('mouseup', e => {
+        e.preventDefault();
         mouseDown = false;
         widthState['end'] = true;
         posState['end'] = true;
@@ -78,6 +80,7 @@
         });
       });
       this.cvs.addEventListener('mousemove', e => {
+        e.preventDefault();
         if (!mouseDown) return;
         this._positiondelta = trueCenter.distanceTo([trueCenter.x(), e.offsetY]) / 1;
       });
