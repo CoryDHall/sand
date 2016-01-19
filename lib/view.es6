@@ -47,7 +47,7 @@
 
     start() {
       let mouseDown = false, trueCenter = this._center.dup(), trueWidth = this._width, widthState = {}, posState = {}, counterAdvance = 0.01;
-      this.cvs.addEventListener('mousedown', e => {
+      let downEvent = (e => {
         e.preventDefault();
         mouseDown = true;
         widthState['end'] = true;
@@ -63,7 +63,9 @@
           return this._center.x(Math.floor((this._center.x() * 10 + e.offsetX) / 11)).x();
         });
       });
-      this.cvs.addEventListener('mouseup', e => {
+      this.cvs.addEventListener('mousedown', downEvent);
+      this.cvs.addEventListener('touchstart', downEvent);
+      let upEvent = (e => {
         e.preventDefault();
         mouseDown = false;
         widthState['end'] = true;
@@ -79,11 +81,16 @@
           return this._center.x(Math.floor((this._center.x() * 20 + trueCenter.x()) / 21)).x();
         });
       });
-      this.cvs.addEventListener('mousemove', e => {
+      this.cvs.addEventListener('mouseup', upEvent);
+      this.cvs.addEventListener('touchend', upEvent);
+
+      let moveEvent = (e => {
         e.preventDefault();
         if (!mouseDown) return;
         this._positiondelta = trueCenter.distanceTo([trueCenter.x(), e.offsetY]) / 1;
       });
+      this.cvs.addEventListener('mousemove', moveEvent);
+      this.cvs.addEventListener('touchmove', moveEvent);
       requestAnimationFrame(this.draw.bind(this));
       var counter = 0;
       setInterval(_ => {
