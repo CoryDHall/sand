@@ -19,7 +19,7 @@
         background: #000;
       }
       canvas {
-        margin: -1px;
+        margin: -1px auto;
         cursor: crosshair;
       }
       .sand-container {
@@ -29,13 +29,28 @@
         right: 5px;
         top: 5px;
         bottom: 5px;
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
+        justify-content: center;
       }
       .sand-container > canvas {
         background: #fff;
+        display: block;
+        flex: none;
+        margin-bottom: 2px;
       }
       .color-picker {
-        position: absolute;
-        right: 0;
+        flex: 1 1 auto;
+        width: 50%;
+        min-width: 180px;
+        box-sizing: border-box;
+        padding: 1px;
+        /*position: absolute;
+        right: 0;*/
+      }
+      .color-picker canvas {
+        width: 100%;
       }
     </style>
   </head>

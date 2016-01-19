@@ -28,14 +28,20 @@
       this._container.appendChild(this.cvs);
       this.ctx = this.cvs.getContext('2d');
 
-      this._colorPicker = new Sand.ColorPicker(this._width, this._height / 4);
-      this._container.appendChild(this._colorPicker.render().el());
+      this._bgColorPicker = new Sand.ColorPicker(this._width / 2.1, this._height / 4);
+      this._container.appendChild(this._bgColorPicker.render().el());
 
-      this._container.addEventListener('colorchange', e => {
+      this._fgColorPicker = new Sand.ColorPicker(this._width / 2.1, this._height / 4);
+      this._container.appendChild(this._fgColorPicker.render().el());
+
+      this._bgColorPicker.el().addEventListener('colorchange', e => {
         this._clearColor = new su.Color(0, 100, 0, 0.8);
         this.clear();
-        this._clearColor = this._colorPicker.getColor();
+        this._clearColor = this._bgColorPicker.getColor();
         this._clearColor.alpha(0.01);
+      });
+      this._fgColorPicker.el().addEventListener('colorchange', e => {
+        this.grain.color = this._grainColor = this._fgColorPicker.getColor();
       });
     }
 
