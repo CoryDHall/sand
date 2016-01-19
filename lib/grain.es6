@@ -20,5 +20,10 @@
       ctx.fillStyle = `${this.color}`;
       ctx.fillRect(...this.position.toArray(), this.size, this.size);
     }
+
+    growBy(factor) {
+      this.size *= factor;
+      return this;
+    }
   }
 })();
