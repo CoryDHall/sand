@@ -60,8 +60,8 @@
           return this._width;
         });
         let x = e.offsetX || e.targetTouches.item(0).clientX;
-        posState = su.doUntil(e.offsetX, _ => {
-          return this._center.x(Math.floor((this._center.x() * 10 + e.offsetX) / 11)).x();
+        posState = su.doUntil(x, _ => {
+          return this._center.x(Math.floor((this._center.x() * 10 + x) / 11)).x();
         });
       });
       this.cvs.addEventListener('mousedown', downEvent);
