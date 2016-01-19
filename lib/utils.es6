@@ -1,6 +1,7 @@
 (function () {
   let Sand = window.Sand = window.Sand || {};
   let u = Sand.Utils = {};
+  let _power = Math.pow;
 
   u.Vector = class {
     constructor(x=0,y=0) {
@@ -35,6 +36,10 @@
     toArray() {
       return [this.pos[0], this.pos[1]];
     }
+
+    distanceTo(coordArr) {
+      return Math.sqrt(_power(this.pos[0] - coordArr[0], 2) + _power(this.pos[1] - coordArr[1], 2));
+    }
   }
 
   u.Color = class {
@@ -58,6 +63,15 @@
       return this._h;
     }
 
+    alpha(val=null) {
+      if (val) {
+        if(val < 0 || val > 1) throw new RangeError('alpha must be between 0 and 1');
+        this._a = val;
+        return this;
+      }
+      return this._a;
+    }
+
     rotate(amount) {
       this.hue(this.hue() + amount);
       return this;
@@ -65,6 +79,10 @@
 
     toString() {
       return `hsla(${this._h}, ${this._s}%, ${this._l}%, ${this._a})`;
+    }
+
+    dup() {
+      return new u.Color(this._h, this._s, this._l, this._a);
     }
   }
 })();

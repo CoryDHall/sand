@@ -46,6 +46,16 @@ describe("Sand Utils", function () {
       describe("add()", function () {
         it("adds two vectors");
       });
+      describe("distanceTo(coordArr)", function () {
+        it("finds the magnitude of the transformation to coordArr", function () {
+          var origin = new Utils.Vector(0, 0), down = [0, 3], right = [4, 0], left = [-4, 0], triangle = [4, 3], triangleOpposite = [-3, -4];
+          expect(origin.distanceTo(down)).toEqual(3);
+          expect(origin.distanceTo(left)).toEqual(4);
+          expect(origin.distanceTo(right)).toEqual(4);
+          expect(origin.distanceTo(triangle)).toEqual(5);
+          expect(origin.distanceTo(triangleOpposite)).toEqual(5);
+        });
+      });
     });
   });
 
@@ -120,6 +130,15 @@ describe("Sand Utils", function () {
       });
       describe("set()", function () {
         it("allows setting via object notation");
+      });
+
+      describe("dup()", function () {
+        it("creates a copy of the instance", function () {
+          var redCopy = red.dup();
+          expect(red.toString()).toBe(redCopy.toString());
+          redCopy.rotate(30);
+          expect(red.toString()).not.toBe(redCopy.toString());
+        });
       });
 
       describe("invert()", function () {
