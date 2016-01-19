@@ -59,6 +59,7 @@
           this._width = Math.floor((this._width + 50) / 2);
           return this._width;
         });
+        let x = e.offsetX || e.targetTouches.item(0).clientX;
         posState = su.doUntil(e.offsetX, _ => {
           return this._center.x(Math.floor((this._center.x() * 10 + e.offsetX) / 11)).x();
         });
@@ -87,7 +88,8 @@
       let moveEvent = (e => {
         e.preventDefault();
         if (!mouseDown) return;
-        this._positiondelta = trueCenter.distanceTo([trueCenter.x(), e.offsetY]) / 1;
+        let y = e.offsetY || e.targetTouches.item(0).clientY;
+        this._positiondelta = trueCenter.distanceTo([trueCenter.x(), y]) / 1;
       });
       this.cvs.addEventListener('mousemove', moveEvent);
       this.cvs.addEventListener('touchmove', moveEvent);
