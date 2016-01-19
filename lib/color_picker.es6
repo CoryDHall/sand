@@ -91,8 +91,8 @@
     }
 
     pickValue(e) {
-      this.currSat = e.offsetX / this._width * 100;
-      this.currLit = (e.offsetY / this._vfctx.canvas.height + e.offsetX / this._width) * 50;
+      this.currSat = e.offsetX / this._vf.clientWidth * 100;
+      this.currLit = (e.offsetY / this._vf.clientHeight + e.offsetX / this._width) * 50;
       this._updateColor();
       this.updateHueField();
     }

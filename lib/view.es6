@@ -38,7 +38,7 @@
         this._clearColor = new su.Color(0, 100, 0, 0.8);
         this.clear();
         this._clearColor = this._bgColorPicker.getColor();
-        this._clearColor.alpha(0.01);
+        this._clearColor.alpha(0.05);
       });
       this._fgColorPicker.el().addEventListener('colorchange', e => {
         this.grain.color = this._grainColor = this._fgColorPicker.getColor();
@@ -54,20 +54,22 @@
       requestAnimationFrame(this.draw.bind(this));
       var counter = 0;
       setInterval(_ => {
-        let gp = this._positiondelta;
-        this._positiondelta += (gp < this._height / 5) * (counter / 20000);
-        this._positiondelta -= (gp > this._height / 4) * (counter / 20000);
+        let gp = this._positiondelta, time = new Date(Date.now());
+        let num = time.getSeconds();
+        // this._positiondelta += (gp < this._height / 5) * (counter / 20000);
+        // this._positiondelta -= (gp > this._height / 4) * (counter / 20000);
         counter += 2;
         counter *= (counter < 10000);
-        for(var i = -30; i < 30; i++) {
-          this.grain.position.y(this._center.y() + i * 5 + gp * Math.sin(i / 30 * counter / (gp)));
+        for(var i = -30; i <= -30 + num; i++) {
+          this.grain.position.y(this._center.y() + i * 1 + gp * Math.sin(i / (1 + 30) * counter / (gp)));
           for (var j = -2; j < 3; j++) {
-            this.grain.size = (10 + 5 * Math.sin(i + counter / 25) - 2 * j * j);
-            this.grain.position.x(this._center.x() - i * 2 + j * this._width / 10 + gp * Math.cos(i + j * counter / (gp)));
+            this.grain.size = ((70 - (i + 40)) / 2 + 5 * Math.sin(i + counter / 25) - 2 * j * j);
+            this.grain.position.x(this._center.x() - i * 2 + j * this._width / 5 + (this._width - gp) / 20 * Math.cos(i + j * counter / (gp)));
+            this.grain.color.rotate(j * (i + 30) / 2);
             this.grain.render(this.ctx);
           }
         }
-      }, 2);
+      }, 0);
     }
 
     draw() {
