@@ -18,7 +18,7 @@
         weight: 1,
         color: this._grainColor
       });
-      this._positiondelta = 5;
+      this._positiondelta = 100;
     }
 
     setUp() {
@@ -46,30 +46,63 @@
     }
 
     start() {
-      this.cvs.addEventListener('click', e => {
-        this._positiondelta = this._center.distanceTo([e.offsetX, e.offsetY]) / 1;
-        requestAnimationFrame(_ => {
+      let mouseDown = false, trueCenter = this._center.dup(), trueWidth = this._width, widthState = {}, posState = {}, counterAdvance = 0.01;
+      this.cvs.addEventListener('mousedown', e => {
+        mouseDown = true;
+        widthState['end'] = true;
+        posState['end'] = true;
+        this._clearColor.alpha(0.01);
+        this._clearColor = this._clearColor.invert();
+        this.grain.color = this._grainColor = this._grainColor.invert();
+        widthState = su.doUntil(50, _ => {
+          this._width = Math.floor((this._width + 50) / 2);
+          return this._width;
         });
+        posState = su.doUntil(e.offsetX, _ => {
+          return this._center.x(Math.floor((this._center.x() * 10 + e.offsetX) / 11)).x();
+        });
+      });
+      this.cvs.addEventListener('mouseup', e => {
+        mouseDown = false;
+        widthState['end'] = true;
+        posState['end'] = true;
+        this._clearColor.alpha(0.05);
+        this._clearColor = this._clearColor.invert();
+        this.grain.color = this._grainColor = this._grainColor.invert();
+        widthState = su.doUntil(Math.round(trueWidth), _ => {
+          this._width = Math.ceil((this._width * 20 + trueWidth) / 21);
+          return this._width;
+        });
+        posState = su.doUntil(trueCenter.x(), _ => {
+          return this._center.x(Math.floor((this._center.x() * 20 + trueCenter.x()) / 21)).x();
+        });
+      });
+      this.cvs.addEventListener('mousemove', e => {
+        if (!mouseDown) return;
+        this._positiondelta = trueCenter.distanceTo([trueCenter.x(), e.offsetY]) / 1;
       });
       requestAnimationFrame(this.draw.bind(this));
       var counter = 0;
       setInterval(_ => {
         let gp = this._positiondelta, time = new Date(Date.now());
-        let num = time.getSeconds();
-        // this._positiondelta += (gp < this._height / 5) * (counter / 20000);
-        // this._positiondelta -= (gp > this._height / 4) * (counter / 20000);
-        counter += 2;
-        counter *= (counter < 10000);
-        for(var i = -30; i <= -30 + num; i++) {
-          this.grain.position.y(this._center.y() + i * 1 + gp * Math.sin(i / (1 + 30) * counter / (gp)));
-          for (var j = -2; j < 3; j++) {
-            this.grain.size = ((70 - (i + 40)) / 2 + 5 * Math.sin(i + counter / 25) - 2 * j * j);
-            this.grain.position.x(this._center.x() - i * 2 + j * this._width / 5 + (this._width - gp) / 20 * Math.cos(i + j * counter / (gp)));
+        let num = time.getSeconds(), x = this._center.x(), y = this._center.y();
+        // this._positiondelta += (gp < this._height / 5);
+        // this._positiondelta -= (gp > this._height / 4);
+        counter += counterAdvance;
+        counter *= (counter < 10000 * Math.PI);
+        for(var i = -30; i <= -29 + num; i+= 0.5) {
+          this.grain.position.y(y + gp * Math.sin(i / 60 * counter));
+          for (var j = -2; j <= 2; j++) {
+            this.grain.size = i / 10 + 6 + j;
+            this.grain.position.x(x + (this._width / 2.05) * Math.cos(this._height - gp * i * j / 600 + counter + i));
+            this.ctx.translate(10 * j, 10 * j);
             this.grain.color.rotate(j * (i + 30) / 2);
             this.grain.render(this.ctx);
+            this.ctx.translate(10 * -j, 10 * -j);
           }
+
         }
-      }, 0);
+      }, 10);
     }
 
     draw() {
@@ -81,8 +114,11 @@
 
     clear(opacity=0.01) {
       let ctx = this.ctx, cvs = ctx.canvas;
-      ctx.fillStyle = `${this._clearColor}`;
-      ctx.fillRect(0,0,cvs.width, cvs.height);
+      setTimeout(_ => {
+        ctx.drawImage(cvs, -1, -1, cvs.width + 2, cvs.height + 2);
+        ctx.fillStyle = `${this._clearColor}`;
+        ctx.fillRect(0,0,cvs.width, cvs.height);
+      }, 0);
     }
   }
 })();

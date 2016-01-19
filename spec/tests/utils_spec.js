@@ -40,6 +40,20 @@ describe("Sand Utils", function () {
       });
     });
     describe("allows operations on vector values", function () {
+      describe("dup()", function () {
+        it("creates a copy of the instance", function () {
+          var origin, originCopy;
+          origin = originCopy = new Utils.Vector(0, 0);
+          origin.x(10);
+          expect(originCopy.x()).toEqual(origin.x());
+          origin = originCopy = new Utils.Vector(0, 0);
+          originCopy = origin.dup();
+          origin.x(10);
+          expect(originCopy.x()).toEqual(0);
+          expect(originCopy.x()).not.toEqual(origin.x());
+
+        });
+      });
       describe("scale()", function () {
         it("applies scalar multiplication to the underlying value");
       });
@@ -142,7 +156,15 @@ describe("Sand Utils", function () {
       });
 
       describe("invert()", function () {
-        it("returns the complementary color");
+        it("returns the complementary color", function () {
+          var black = new Utils.Color(0, 0, 0, 1);
+          var white = new Utils.Color(180, 100, 100, 1);
+          expect("" + red.invert()).toBe("hsla(180, 50%, 50%, 0.5)");
+          expect("" + blue.invert()).toBe("hsla(60, 50%, 50%, 0.5)");
+          expect("" + green.invert()).toBe("hsla(300, 50%, 50%, 1)");
+          expect("" + black.invert()).toBe("hsla(180, 0%, 100%, 1)");
+          expect("" + white.invert()).toBe("hsla(0, 100%, 0%, 1)");
+        });
       });
       describe("mix()", function () {
         it("accepts multiple colors");
