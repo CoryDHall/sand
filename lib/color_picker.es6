@@ -44,25 +44,46 @@
       this._hsctx = this._hs.getContext('2d');
       this.updateHueField();
       let mDown = false, oldOffset = 0;
-      this._hs.addEventListener('mousemove', e => {
-        if (!mDown) return;
-        let cHue = this.offset = (e.offsetX / this._width * 360);
-        // let cHue = (e.offsetX / this._width * 360);
-        // this.offset = oldOffset + cHue;
-        this.updateHueField();
-        this.updateValueField(cHue, 5);
+      su.addDragEvents(this._hs, {
+        'move': (e => {
+          if (!mDown) return;
+          let cHue = this.offset = (e.offsetX / this._width * 360);
+          // let cHue = (e.offsetX / this._width * 360);
+          // this.offset = oldOffset + cHue;
+          this.updateHueField();
+          this.updateValueField(cHue, 5);
+        }),
+        'end': (e => {
+          if (oldOffset == this.offset) {
+            this.offset += (e.offsetX / this._width * 360);
+          }
+          this.pickHue(e);
+          mDown = false;
+        }),
+        'start': (e => {
+          mDown = true;
+          oldOffset = this.offset;
+        })
       });
-      this._hs.addEventListener('mouseup', e => {
-        if (oldOffset == this.offset) {
-          this.offset += (e.offsetX / this._width * 360);
-        }
-        this.pickHue(e);
-        mDown = false;
-      });
-      this._hs.addEventListener('mousedown', e => {
-        mDown = true;
-        oldOffset = this.offset;
-      });
+      // this._hs.addEventListener('mousemove', e => {
+      //   if (!mDown) return;
+      //   let cHue = this.offset = (e.offsetX / this._width * 360);
+      //   // let cHue = (e.offsetX / this._width * 360);
+      //   // this.offset = oldOffset + cHue;
+      //   this.updateHueField();
+      //   this.updateValueField(cHue, 5);
+      // });
+      // this._hs.addEventListener('mouseup', e => {
+      //   if (oldOffset == this.offset) {
+      //     this.offset += (e.offsetX / this._width * 360);
+      //   }
+      //   this.pickHue(e);
+      //   mDown = false;
+      // });
+      // this._hs.addEventListener('mousedown', e => {
+      //   mDown = true;
+      //   oldOffset = this.offset;
+      // });
     }
 
     updateHueField() {

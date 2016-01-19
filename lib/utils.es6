@@ -14,6 +14,35 @@
     return status;
   }
 
+  u.addDragEvents = function (target, handlers) {
+    function touchToClick(evtHandler) {
+      if (!evtHandler) return;
+      return (e => {
+        let eCopy = {};
+        eCopy.offsetX = e.offsetX || e.targetTouches.item(0).clientX;
+        eCopy.offsetY = e.offsetY || e.targetTouches.item(0).clientY;
+        return evtHandler(eCopy);
+      });
+    }
+
+    let startHandler = touchToClick(handlers['start']);
+    let moveHandler = touchToClick(handlers['move']);
+    let endHandler = touchToClick(handlers['end']);
+
+    if (startHandler) {
+      target.addEventListener('mousedown', startHandler);
+      target.addEventListener('touchstart', startHandler);
+    }
+    if (moveHandler) {
+      target.addEventListener('mousemove', moveHandler);
+      target.addEventListener('touchmove', moveHandler);
+    }
+    if (endHandler) {
+      target.addEventListener('mouseup', endHandler);
+      target.addEventListener('touchend', endHandler);
+    }
+  }
+
   u.Vector = class {
     constructor(x=0,y=0) {
       this.pos = new Float64Array([x, y]);
