@@ -4,24 +4,38 @@
     <meta charset="utf-8">
     <title>sand demo</title>
     <style media="screen">
-      html, body {
+      html, body, canvas, div {
         margin: 0;
         padding: 0;
         border: 0;
+      }
+      body {
         position: absolute;
         width: 100%;
         left: 0;
         right: 0;
         top: 0;
         bottom: 0;
+        background: #000;
+      }
+      canvas {
+        margin: -1px;
+        cursor: crosshair;
       }
       .sand-container {
         position: absolute;
         margin: 0 auto;
-        left: 25%;
-        right: 25%;
-        top: 25%;
-        bottom: 25%;
+        left: 5px;
+        right: 5px;
+        top: 5px;
+        bottom: 5px;
+      }
+      .sand-container > canvas {
+        background: #fff;
+      }
+      .color-picker {
+        position: absolute;
+        right: 0;
       }
     </style>
   </head>
