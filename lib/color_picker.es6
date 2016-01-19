@@ -118,7 +118,20 @@
       this._container.appendChild(this._vf);
       this._vfctx = this._vf.getContext('2d');
       this.updateValueField();
-      this._vf.addEventListener('click', this.pickValue.bind(this));
+      let mDown = false;
+      su.addDragEvents(this._vf, {
+        'end': (e => {
+          mDown = false
+          this.pickValue(e);
+        }),
+        'move': (e => {
+          if(mDown) this.selectValue(e);
+        }),
+        'start': (e => {
+          mDown = true;
+        })
+      })
+      // this._vf.addEventListener('click', this.pickValue.bind(this));
     }
 
     updateValueField(hue=null, res=100) {
@@ -135,11 +148,17 @@
       }
     }
 
-    pickValue(e) {
+    selectValue(e) {
+      let oldSat = this.currSat, oldLit = this.currLit;
       this.currSat = e.offsetX / this._vf.clientWidth * 100;
       this.currLit = (e.offsetY / this._vf.clientHeight + e.offsetX / this._width) * 50;
-      this._updateColor();
+      if(~~(oldSat - this.currSat) > 1 || ~~(oldLit - this.currLit) > 1) this.updateHueField();
+    }
+
+    pickValue(e) {
+      this.selectValue(e);
       this.updateHueField();
+      this._updateColor();
     }
 
     getColor() {

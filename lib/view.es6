@@ -88,8 +88,13 @@
       let moveEvent = (e => {
         e.preventDefault();
         if (!mouseDown) return;
+        posState['end'] = true;
         let y = e.offsetY || e.targetTouches.item(0).clientY;
         this._positiondelta = trueCenter.distanceTo([trueCenter.x(), y]) / 1;
+        let x = e.offsetX || e.targetTouches.item(0).clientX;
+        posState = su.doUntil(x, _ => {
+          return this._center.x(Math.floor((this._center.x() * 10 + x) / 11)).x();
+        });
       });
       this.cvs.addEventListener('mousemove', moveEvent);
       this.cvs.addEventListener('touchmove', moveEvent);
@@ -102,7 +107,7 @@
         // this._positiondelta -= (gp > this._height / 4);
         counter += counterAdvance;
         counter *= (counter < 10000 * Math.PI);
-        for(var i = -30; i <= -29 + num; i+= 0.5) {
+        for(var i = -30; i <= 30; i+= 31 / (num + 1)) {
           this.grain.position.y(y + gp * Math.sin(i / 60 * counter));
           for (var j = -2; j <= 2; j++) {
             this.grain.size = i / 10 + 6 + j;
