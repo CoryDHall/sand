@@ -78,6 +78,7 @@
     }
 
     triggerEvent() {
+      colorChangeEvt.color = this._color;
       this._container.dispatchEvent(colorChangeEvt);
     }
 
