@@ -144,9 +144,99 @@
     invert() {
       let newColor = this.dup();
       newColor
+        .rotate(180)
+        .lightness(100 - this._l);
+      return newColor;
+    }
+
+    complement() {
+      let newColor = this.dup();
+      newColor
         .rotate(150)
         .lightness(100 - this._l);
       return newColor;
+    }
+
+    mix(...colors) {
+      let cRed = this._red(), cGrn = this._green(), cBlu = this._blue(), cSat = this._s, cLit = this._l, cAlph = this._a;
+
+      colors.forEach(color => {
+        cRed += color._red();
+        cGrn += color._green();
+        cBlu += color._blue();
+      });
+
+
+      [cRed, cGrn, cBlu] = [cRed, cGrn, cBlu].map(cVal => { return cVal / (colors.length + 1) });
+
+      let [max, min] = [Math.max(...[cRed, cGrn, cBlu]), Math.min(...[cRed, cGrn, cBlu])];
+
+      let delta = max - min;
+
+      var cHue;
+      switch (max) {
+        case cRed:
+          cHue = ((cGrn - cBlu) / delta) % 6
+          break;
+        case cGrn:
+          cHue = (cBlu - cRed) / delta + 2
+          break;
+        case cBlu:
+          cHue = (cRed - cGrn) / delta + 4
+          break;
+        default:
+          cHue = 0;
+      }
+
+      cHue *= 60;
+      if (cHue < 0) cHue += 360;
+
+
+      let cValues = [cSat, cLit, cAlph];
+      cValues = cValues.map(cVal => { return cVal / (colors.length + 1) });
+      return new u.Color(cHue, ...cValues);
+    }
+
+    toRGBA() {
+      return `rgba(${this.red()}, ${this.green()}, ${this.blue()}, ${this._a})`;
+    }
+
+    red() {
+      return ~~(this._red() * this.chroma() * 255);
+    }
+
+    _red() {
+      var redAmount;
+      if (this._h <= 60 || this._h >= 300) {
+        redAmount = 1;
+      } else if (this._h < 120) {
+        redAmount =  1 - (this._h - 60) / 60;
+      } else if (this._h > 240) {
+        redAmount =  (this._h - 240) / 60;
+      } else {
+        redAmount = 0;
+      }
+      return redAmount;
+    }
+
+    green() {
+      return this.dup().rotate(-120).red();
+    }
+
+    blue() {
+      return this.dup().rotate(120).red();
+    }
+
+    _green() {
+      return this.dup().rotate(-120)._red();
+    }
+
+    _blue() {
+      return this.dup().rotate(120)._red();
+    }
+
+    chroma() {
+      return (this._l >= 50 ? 1 : this._l / 50) * (this._s / 50);
     }
 
     toString() {

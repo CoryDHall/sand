@@ -95,11 +95,14 @@ describe("Sand Utils", function () {
       expect(newColor(120, 100, 50, 120)).toThrow();
     });
     describe("methods:", function () {
-      var red, blue, green;
+      var red, blue, green, yellow, cyan, magenta;
       beforeEach(function () {
         red = new Utils.Color(0, 50, 50, 0.5);
         blue = new Utils.Color(240, 50, 50, 0.5);
         green = new Utils.Color(120, 50, 50);
+        yellow = new Utils.Color(60, 50, 50, 0.5);
+        cyan = new Utils.Color(180, 50, 50, 0.5);
+        magenta = new Utils.Color(300, 50, 50);
       });
       describe("rotate()", function () {
         it("rotates hue", function () {
@@ -142,6 +145,19 @@ describe("Sand Utils", function () {
           expect("" + green).toBe("hsla(120, 50%, 50%, 1)");
         });
       });
+      describe("toRGBA()", function () {
+        it("returns a string in rgba format", function () {
+          expect(red.toRGBA()).toBe("rgba(255, 0, 0, 0.5)");
+          expect(blue.toRGBA()).toBe("rgba(0, 0, 255, 0.5)");
+          expect(green.toRGBA()).toBe("rgba(0, 255, 0, 1)");
+          expect(yellow.toRGBA()).toBe("rgba(255, 255, 0, 0.5)");
+          expect(yellow.rotate(30).toRGBA()).toBe("rgba(127, 255, 0, 0.5)");
+          expect(cyan.toRGBA()).toBe("rgba(0, 255, 255, 0.5)");
+          expect(cyan.rotate(-30).toRGBA()).toBe("rgba(0, 255, 127, 0.5)");
+          expect(magenta.toRGBA()).toBe("rgba(255, 0, 255, 1)");
+          expect(magenta.rotate(45).toRGBA()).toBe("rgba(255, 0, 63, 1)");
+        });
+      });
       describe("set()", function () {
         it("allows setting via object notation");
       });
@@ -156,19 +172,80 @@ describe("Sand Utils", function () {
       });
 
       describe("invert()", function () {
+        it("returns the inverted color", function () {
+          var black = new Utils.Color(0, 0, 0, 1);
+          var white = new Utils.Color(180, 100, 100, 1);
+          expect("" + red.invert()).toBe("hsla(180, 50%, 50%, 0.5)");
+          expect("" + blue.invert()).toBe("hsla(60, 50%, 50%, 0.5)");
+          expect("" + green.invert()).toBe("hsla(300, 50%, 50%, 1)");
+          expect("" + red.invert()).toBe("" + cyan);
+          expect("" + blue.invert()).toBe("" + yellow);
+          expect("" + green.invert()).toBe("" + magenta);
+          expect("" + black.invert()).toBe("hsla(180, 0%, 100%, 1)");
+          expect("" + white.invert()).toBe("hsla(0, 100%, 0%, 1)");
+        });
+      });
+
+      describe("complement()", function () {
         it("returns the complementary color", function () {
           var black = new Utils.Color(0, 0, 0, 1);
           var white = new Utils.Color(180, 100, 100, 1);
-          expect("" + red.invert()).toBe("hsla(150, 50%, 50%, 0.5)");
-          expect("" + blue.invert()).toBe("hsla(30, 50%, 50%, 0.5)");
-          expect("" + green.invert()).toBe("hsla(270, 50%, 50%, 1)");
-          expect("" + black.invert()).toBe("hsla(150, 0%, 100%, 1)");
-          expect("" + white.invert()).toBe("hsla(330, 100%, 0%, 1)");
+          expect("" + red.complement()).toBe("hsla(150, 50%, 50%, 0.5)");
+          expect("" + blue.complement()).toBe("hsla(30, 50%, 50%, 0.5)");
+          expect("" + green.complement()).toBe("hsla(270, 50%, 50%, 1)");
+          expect("" + black.complement()).toBe("hsla(150, 0%, 100%, 1)");
+          expect("" + white.complement()).toBe("hsla(330, 100%, 0%, 1)");
+        });
+      });
+
+      describe("red()", function () {
+        it("return the red value of the color", function () {
+          expect(red.red()).toEqual(255);
+          expect(yellow.red()).toEqual(255);
+          expect(magenta.rotate(-30).red()).toEqual(127);
+          expect(yellow.rotate(30).red()).toEqual(127);
+          expect(blue.red()).toEqual(0);
+          expect(green.red()).toEqual(0);
+        });
+      });
+
+      describe("green()", function () {
+        it("return the green value of the color", function () {
+          expect(green.green()).toEqual(255);
+          expect(yellow.green()).toEqual(255);
+          expect(yellow.rotate(-30).green()).toEqual(127);
+          expect(cyan.rotate(30).green()).toEqual(127);
+          expect(blue.green()).toEqual(0);
+          expect(red.green()).toEqual(0);
+        });
+      });
+
+      describe("blue()", function () {
+        it("return the blue value of the color", function () {
+          expect(blue.blue()).toEqual(255);
+          expect(yellow.blue()).toEqual(0);
+          expect(magenta.rotate(30).blue()).toEqual(127);
+          expect(cyan.blue()).toEqual(255);
+          expect(cyan.rotate(-30).blue()).toEqual(127);
+          expect(red.blue()).toEqual(0);
         });
       });
       describe("mix()", function () {
         it("accepts multiple colors");
-        it("returns an averaged color");
+        it("returns an averaged color", function () {
+          expect(red.mix(red).hue()).toEqual(0);
+          expect(blue.mix(blue).hue()).toEqual(240);
+          expect(green.mix(green).hue()).toEqual(120);
+
+          expect(red.mix(blue).hue()).toEqual(magenta.hue());
+          expect(blue.mix(red).hue()).toEqual(magenta.hue());
+
+          expect(red.mix(green).hue()).toEqual(yellow.hue());
+          expect(green.mix(red).hue()).toEqual(yellow.hue());
+
+          expect(green.mix(blue).hue()).toEqual(cyan.hue());
+          expect(blue.mix(green).hue()).toEqual(cyan.hue());
+        });
       });
     });
 
