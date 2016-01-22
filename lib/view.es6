@@ -3,6 +3,8 @@
 
   let su = Sand.Utils;
 
+  const bgRefresh = 0.2;
+
   let sv = Sand.View = class {
     constructor(container) {
       this._container = container;
@@ -37,28 +39,38 @@
       let bgState = {};
       this._bgColorPicker.el().addEventListener('colorchange', e => {
         bgState['end'] = true;
-        let newColor = this._bgColorPicker.getColor();
+        let newColor = e.color;
         this._clearColor.hue(newColor.hue());
         bgState = su.doUntil(true, _ => {
           this._clearColor.saturation((this._clearColor.saturation() + newColor.saturation() * 2) / 3);
           this._clearColor.lightness((this._clearColor.lightness() + newColor.lightness() * 2) / 3);
-          this._clearColor.alpha(0.05);
+          this._clearColor.alpha(bgRefresh);
           return (Math.abs(this._clearColor.saturation() - newColor.saturation()) < 1) && (Math.abs(this._clearColor.lightness() - newColor.lightness()) < 1) ;
-        })
+        });
       });
+      let fgState = {};
       this._fgColorPicker.el().addEventListener('colorchange', e => {
-        this.grain.color = this._grainColor = this._fgColorPicker.getColor();
+        fgState['end'] = true;
+        let newColor = e.color;
+        let newHue = newColor.hue();
+        this._grainColor.lightness(newColor.lightness());
+        this._grainColor.saturation(newColor.saturation());
+        this.grain.color = this._grainColor;
+        fgState = su.doUntil(true, _ => {
+          this._grainColor.rotate(Math.abs(this._grainColor.hue() - newHue) / 2 * ((this._grainColor.hue() - newHue < 0) - (this._grainColor.hue() - newHue > 0)));
+          return Math.abs(this._grainColor.hue() - newColor.hue()) <= 1;
+        });
       });
     }
 
     start() {
-      let mouseDown = false, trueCenter = this._center.dup(), trueWidth = this._width, minWidth = 1, widthState = {}, posState = {}, counterAdvance = 0.05;
+      let mouseDown = false, trueCenter = this._center.dup(), trueWidth = this._width, minWidth = 10, widthState = {}, posState = {}, counterAdvance = 0.05;
       let downEvent = (e => {
         e.preventDefault();
         mouseDown = true;
         widthState['end'] = true;
         posState['end'] = true;
-        this._clearColor.alpha(0.01);
+        this._clearColor.alpha(bgRefresh / 5);
         this._clearColor = this._clearColor.invert();
         this.grain.color = this._grainColor = this._grainColor.invert();
         widthState = su.doUntil(minWidth, _ => {
@@ -77,7 +89,7 @@
         mouseDown = false;
         widthState['end'] = true;
         posState['end'] = true;
-        this._clearColor.alpha(0.05);
+        this._clearColor.alpha(bgRefresh);
         this._clearColor = this._clearColor.invert();
         this.grain.color = this._grainColor = this._grainColor.invert();
         widthState = su.doUntil(Math.round(trueWidth), _ => {
@@ -109,23 +121,21 @@
       setInterval(_ => {
         let gp = this._positiondelta, time = new Date(Date.now());
         let num = time.getSeconds(), x = this._center.x(), y = this._center.y();
-        // this._positiondelta += (gp < this._height / 5);
-        // this._positiondelta -= (gp > this._height / 4);
         counter += counterAdvance;
         counter *= (counter < 10000 * Math.PI);
         this.ctx.beginPath();
         this.ctx.moveTo(...this._center.toArray());
-        for(var i = -30; i <= 30; i+= 31 / (num + 1)) {
+        for(var i = -30; i <= 30; i+= 1 + 0 * 31 / (num + 1)) {
           this.grain.position.y(y + gp * Math.sin(i / 60 * counter));
           for (var j = -2; j <= 2; j++) {
-            this.grain.size = i / 10 + 6 + j;
-            this.grain.position.x(x + (this._width / 2.05) * Math.cos(this._height - gp * i * j / 600 + counter + i));
-            this.ctx.translate(10 * i, 10 * j);
-            this.grain.color.rotate(j * (i + 30) / 2);
+            this.grain.size = 7 + 3 * Math.cos(i / 60 * counter) + 3 * Math.sin(this._height - gp * i * j / 600 + counter + i);
+            this.grain.position.x(x + (this._width / 2.25) * Math.cos(this._height - gp * i * j / 600 + counter + i));
+            this.ctx.translate((this._width / num / 30 + minWidth) * i, 10 * j);
+            this.grain.color.rotate(j * (i + 30) / 10);
             this.ctx.beginPath();
             this.grain.render(this.ctx);
             this.ctx.closePath();
-            this.ctx.translate(10 * -i, 10 * -j);
+            this.ctx.translate((this._width / num / 30 + minWidth) * -i, 10 * -j);
           }
         }
       }, 10);
