@@ -47,9 +47,7 @@
       su.addDragEvents(this._hs, {
         'move': (e => {
           if (!mDown) return;
-          let cHue = this.offset = (e.offsetX / this._width * 360);
-          // let cHue = (e.offsetX / this._width * 360);
-          // this.offset = oldOffset + cHue;
+          let cHue = this.offset = 360 - (e.offsetX / this._width * 360);
           this.updateHueField();
           this.updateValueField(cHue, 5);
         }),
@@ -61,29 +59,11 @@
           mDown = false;
         }),
         'start': (e => {
+          e.preventDefault();
           mDown = true;
           oldOffset = this.offset;
         })
       });
-      // this._hs.addEventListener('mousemove', e => {
-      //   if (!mDown) return;
-      //   let cHue = this.offset = (e.offsetX / this._width * 360);
-      //   // let cHue = (e.offsetX / this._width * 360);
-      //   // this.offset = oldOffset + cHue;
-      //   this.updateHueField();
-      //   this.updateValueField(cHue, 5);
-      // });
-      // this._hs.addEventListener('mouseup', e => {
-      //   if (oldOffset == this.offset) {
-      //     this.offset += (e.offsetX / this._width * 360);
-      //   }
-      //   this.pickHue(e);
-      //   mDown = false;
-      // });
-      // this._hs.addEventListener('mousedown', e => {
-      //   mDown = true;
-      //   oldOffset = this.offset;
-      // });
     }
 
     updateHueField() {
@@ -103,8 +83,6 @@
 
     pickHue(e) {
       this.currHue = this.offset;
-      // this.currHue = ((e.offsetX / this._width * 360) + this.offset) % 360;
-      // this.offset = this.currHue;
       this._color.hue(this.currHue);
       this.triggerEvent();
       this.updateValueField(this.currHue);
@@ -128,10 +106,10 @@
           if(mDown) this.selectValue(e);
         }),
         'start': (e => {
+          e.preventDefault();
           mDown = true;
         })
       })
-      // this._vf.addEventListener('click', this.pickValue.bind(this));
     }
 
     updateValueField(hue=null, res=100) {
@@ -149,10 +127,9 @@
     }
 
     selectValue(e) {
-      let oldSat = this.currSat, oldLit = this.currLit;
       this.currSat = e.offsetX / this._vf.clientWidth * 100;
       this.currLit = (e.offsetY / this._vf.clientHeight + e.offsetX / this._width) * 50;
-      if(~~(oldSat - this.currSat) > 1 || ~~(oldLit - this.currLit) > 1) this.updateHueField();
+      requestAnimationFrame(this.updateHueField.bind(this));
     }
 
     pickValue(e) {
