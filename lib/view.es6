@@ -78,8 +78,9 @@
           return this._width;
         });
         let x = e.offsetX || e.targetTouches.item(0).clientX;
-        posState = su.doUntil(x, _ => {
-          return this._center.x(Math.floor((this._center.x() * 10 + x) / 11)).x();
+        posState = su.doUntil(x, () => {
+          this._center.x = Math.floor((this._center.x * 10 + x) / 11);
+          return this._center.x;
         });
       });
       this.cvs.addEventListener('mousedown', downEvent);
@@ -96,8 +97,9 @@
           this._width = Math.ceil((this._width * 20 + trueWidth) / 21);
           return this._width;
         });
-        posState = su.doUntil(trueCenter.x(), _ => {
-          return this._center.x(Math.floor((this._center.x() * 20 + trueCenter.x()) / 21)).x();
+        posState = su.doUntil(trueCenter.x, () => {
+          this._center.x = Math.floor((this._center.x * 20 + trueCenter.x) / 21);
+          return this._center.x;
         });
       });
       this.cvs.addEventListener('mouseup', upEvent);
@@ -108,10 +110,11 @@
         if (!mouseDown) return;
         posState['end'] = true;
         let y = e.offsetY || e.targetTouches.item(0).clientY;
-        this._positiondelta = trueCenter.distanceTo([trueCenter.x(), y]) / 1;
+        this._positiondelta = trueCenter.distanceTo([trueCenter.x, y]) / 1;
         let x = e.offsetX || e.targetTouches.item(0).clientX;
-        posState = su.doUntil(x, _ => {
-          return this._center.x(Math.floor((this._center.x() * 10 + x) / 11)).x();
+        posState = su.doUntil(x, () => {
+          this._center.x = Math.floor((this._center.x * 10 + x) / 11);
+          return this._center.x;
         });
       });
       this.cvs.addEventListener('mousemove', moveEvent);
@@ -120,16 +123,16 @@
       var counter = 0;
       setInterval(_ => {
         let gp = this._positiondelta, time = new Date(Date.now());
-        let num = time.getSeconds(), x = this._center.x(), y = this._center.y();
+        let num = time.getSeconds(), x = this._center.x, y = this._center.y;
         counter += counterAdvance;
         counter *= (counter < 10000 * Math.PI);
         this.ctx.beginPath();
         this.ctx.moveTo(...this._center.toArray());
         for(var i = -30; i <= 30; i+= 1 + 0 * 31 / (num + 1)) {
-          this.grain.position.y(y + gp * Math.sin(i / 60 * counter));
+          this.grain.position.y = (y + gp * Math.sin(i / 60 * counter));
           for (var j = -2; j <= 2; j++) {
             this.grain.size = 7 + 3 * Math.cos(i / 60 * counter) + 3 * Math.sin(this._height - gp * i * j / 600 + counter + i);
-            this.grain.position.x(x + (this._width / 2.25) * Math.cos(this._height - gp * i * j / 600 + counter + i));
+            this.grain.position.x = (x + (this._width / 2.25) * Math.cos(this._height - gp * i * j / 600 + counter + i));
             this.ctx.translate((this._width / num / 30 + minWidth) * i, 10 * j);
             this.grain.color.rotate(j * (i + 30) / 10);
             this.ctx.beginPath();
@@ -150,7 +153,7 @@
 
     clear(opacity=0.01) {
       let ctx = this.ctx, cvs = ctx.canvas;
-      setTimeout(_ => {
+      setTimeout(() => {
         ctx.fillStyle = `${this._clearColor}`;
         ctx.fillRect(0,0,cvs.width, cvs.height);
         var xDeg = (Date.now() / 7000) % 20 - 10;
