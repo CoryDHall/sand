@@ -68,13 +68,40 @@
     }
 
     set(newPos) {
-      _pos.set(this, newPos);
+      [this.x, this.y] = Array.from(newPos);
       return this;
     }
 
     scale(multiplier) {
       this.set(this.toArray().map((val) => { return val * multiplier }));
       return this;
+    }
+
+    add(...vecs) {
+      let [x, y] = this.toArray();
+      vecs.forEach((vec) => {
+        x += vec.x;
+        y += vec.y;
+      });
+      this.set([x, y]);
+      return this;
+    }
+
+    get magnitude() {
+      return this.distanceTo([0, 0]);
+    }
+
+    get angle() {
+      return Math.atan2(...this.toArray().reverse());
+    }
+
+    dot(vector) {
+      return this.x * vector.x + this.y * vector.y;
+    }
+
+    rect(vector) {
+      let [x1, y1, x2, y2] = [...this.toArray(), ...vector.toArray()];
+      return [[[x1, x2], [x1, y2]],[[y1, x2], [y1, y2]]];
     }
 
     get() {
@@ -90,7 +117,7 @@
     }
 
     distanceTo(coordArr) {
-      let [x1, y1] = this.toArray(), [x2, y2] = coordArr;
+      let [x1, y1] = this.toArray(), [x2, y2] = Array.from(coordArr);
       return Math.sqrt(_power(x1 - x2, 2) + _power(y1 - y2, 2));
     }
   }

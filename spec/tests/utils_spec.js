@@ -46,7 +46,7 @@ describe("Sand Utils", function () {
       });
     });
     describe("allows operations on vector values", function () {
-      var origin, down, right, left, triangle, triangleOpposite;
+      var origin, down, right, left, triangle, triangleOpposite, vec1, vec2, vec3;
       beforeEach(function () {
         origin = new Utils.Vector(0, 0);
         down = [0, 3];
@@ -54,6 +54,9 @@ describe("Sand Utils", function () {
         left = [-4, 0];
         triangle = [4, 3];
         triangleOpposite = [-3, -4];
+        vec1 = new Utils.Vector(1, 2);
+        vec2 = new Utils.Vector(3, -4);
+        vec3 = new Utils.Vector(-3, 4);
       });
       describe("dup()", function () {
         it("creates a copy of the instance", function () {
@@ -77,11 +80,51 @@ describe("Sand Utils", function () {
           expect(origin.toArray()).toEqual([3, 0]);
           origin.y = -1;
           origin.scale(-3);
-          expect(origin.toArray()).toEqual([-9, 3]);          
+          expect(origin.toArray()).toEqual([-9, 3]);
         });
       });
       describe("add()", function () {
-        it("adds two vectors");
+        it("adds two vectors", function () {
+          vec1.add(vec2);
+          expect(vec1.toArray()).toEqual([4, -2]);
+          vec2.add(vec3);
+          expect(vec2.toArray()).toEqual([0, 0]);
+        });
+        it("adds multiple vectors", function () {
+          vec1.add(vec2, vec2);
+          expect(vec1.toArray()).toEqual([7, -6]);
+        });
+      });
+      describe("dot()", function () {
+        it("returns the dot product of two vector objects", function () {
+          expect(vec1.dot(vec2)).toEqual(-5);
+          expect(vec2.dot(vec3)).toEqual(-25);
+        })
+      });
+      describe("rect()", function () {
+        it("returns the cartesian product of two vector objects", function () {
+          var res1 = vec1.rect(vec1), res2 = vec1.rect(vec2);
+          expect(res1).toEqual([[[1, 1], [1, 2]], [[2, 1], [2, 2]]]);
+          expect(res2).toEqual([[[1, 3], [1, -4]], [[2, 3], [2, -4]]]);
+        })
+      });
+      describe("magnitude", function () {
+        it("returns the vector scalar length", function () {
+          expect(origin.magnitude).toEqual(0);
+          expect(vec2.magnitude).toEqual(5);
+          expect(vec2.add(vec2).magnitude).toEqual(10);
+        });
+      });
+      describe("angle", function () {
+        it("returns the vector angle", function () {
+          expect(origin.angle).toEqual(0);
+          expect(new Utils.Vector(1, 0).angle).toEqual(0);
+          expect(new Utils.Vector(1, 1).angle).toEqual(Math.PI / 4);
+          expect(new Utils.Vector(0, 1).angle).toEqual(Math.PI / 2);
+          expect(new Utils.Vector(-1, 1).angle).toEqual(3 * Math.PI / 4);
+          expect(new Utils.Vector(-1, -1).angle).toEqual(3 * Math.PI / -4);
+          expect(new Utils.Vector(1, -1).angle).toEqual(Math.PI / -4);
+        })
       });
       describe("distanceTo(coordArr)", function () {
         it("finds the magnitude of the transformation to coordArr", function () {
