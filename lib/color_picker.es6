@@ -59,7 +59,6 @@
           mDown = false;
         }),
         'start': (e => {
-          e.preventDefault();
           mDown = true;
           oldOffset = this.offset;
         })
@@ -107,7 +106,6 @@
           if(mDown) this.selectValue(e);
         }),
         'start': (e => {
-          e.preventDefault();
           mDown = true;
         })
       })

@@ -44,48 +44,49 @@
     }
   }
 
+  const _pos = new WeakMap();
+
   u.Vector = class {
     constructor(x=0,y=0) {
-      this.pos = new Float64Array([x, y]);
+      _pos.set(this, new Float64Array([x, y]));
     }
 
-    x(val=null) {
-      if (val) {
-        this.pos[0] = val;
-        return this;
-      }
-
-      return this.pos[0];
+    get x() {
+      return _pos.get(this)[0]
     }
 
-    y(val=null) {
-      if (val) {
-        this.pos[1] = val;
-        return this;
-      }
+    set x(val) {
+      _pos.get(this)[0] = val;
+    }
 
-      return this.pos[1];
+    get y() {
+      return _pos.get(this)[1]
+    }
+
+    set y(val) {
+      _pos.get(this)[1] = val;
     }
 
     set(newPos) {
-      this.pos.set(newPos);
+      _pos.set(this, newPos);
       return this;
     }
 
     get() {
-      return this.pos;
+      return _pos.get(this);
     }
 
     toArray() {
-      return [this.pos[0], this.pos[1]];
+      return [..._pos.get(this)];
     }
 
     dup() {
-      return new u.Vector(...this.pos);
+      return new u.Vector(..._pos.get(this));
     }
 
     distanceTo(coordArr) {
-      return Math.sqrt(_power(this.pos[0] - coordArr[0], 2) + _power(this.pos[1] - coordArr[1], 2));
+      let [x1, y1] = this.toArray(), [x2, y2] = coordArr;
+      return Math.sqrt(_power(x1 - x2, 2) + _power(y1 - y2, 2));
     }
   }
 
