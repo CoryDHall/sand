@@ -126,6 +126,20 @@ describe("Sand Utils", function () {
           expect(new Utils.Vector(1, -1).angle).toEqual(Math.PI / -4);
         })
       });
+      describe("rotate(rad)", function () {
+        it("rotates the vector by angle *rad*", function () {
+          var newVec = new Utils.Vector(1, 0);
+          expect(origin.rotate(Math.PI).toArray()).toEqual([-0, 0]);
+          newVec.rotate(Math.PI / 4);
+          expect(newVec.magnitude).toEqual(1);
+          expect(newVec.angle).toBeCloseTo(Math.PI / 4, 6);
+          newVec.rotate(Math.PI / 2);
+          expect(newVec.magnitude).toEqual(1);
+          expect(newVec.angle).toBeCloseTo(3 * Math.PI / 4, 6);
+          newVec.rotate(3 * Math.PI / 4);
+          expect(newVec.angle).toBeCloseTo(-Math.PI / 2, 6);
+        })
+      });
       describe("distanceTo(coordArr)", function () {
         it("finds the magnitude of the transformation to coordArr", function () {
           expect(origin.distanceTo(down)).toEqual(3);

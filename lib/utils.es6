@@ -104,6 +104,14 @@
       return [[[x1, x2], [x1, y2]],[[y1, x2], [y1, y2]]];
     }
 
+    rotate(angle) {
+      let [sin, cos] = [Math.sin(angle), Math.cos(angle)],
+        [x, y] = this.toArray();
+      this.x = x * cos - y * sin;
+      this.y = x * sin + y * cos;
+      return this;
+    }
+
     get() {
       return _pos.get(this);
     }
