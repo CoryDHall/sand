@@ -72,6 +72,11 @@
       return this;
     }
 
+    scale(multiplier) {
+      this.set(this.toArray().map((val) => { return val * multiplier }));
+      return this;
+    }
+
     get() {
       return _pos.get(this);
     }
