@@ -78,9 +78,9 @@
           return this._width;
         });
         let x = e.offsetX || e.targetTouches.item(0).clientX;
-        posState = su.doUntil(x, () => {
-          this._center.x = Math.floor((this._center.x * 10 + x) / 11);
-          return this._center.x;
+        posState = su.doUntil(true, () => {
+          this._center.x = (this._center.x * 10 + x) / 11;
+          return Math.abs(this._center.x - x) <= 1;
         });
       });
       this.cvs.addEventListener('mousedown', downEvent);
@@ -91,8 +91,8 @@
         widthState['end'] = true;
         posState['end'] = true;
         this._clearColor.alpha(bgRefresh);
-        this._clearColor = this._clearColor.invert();
-        this.grain.color = this._grainColor = this._grainColor.invert();
+        this._clearColor = this._clearColor.complement();
+        this.grain.color = this._grainColor = this._grainColor.complement();
         widthState = su.doUntil(Math.round(trueWidth), _ => {
           this._width = Math.ceil((this._width * 20 + trueWidth) / 21);
           return this._width;

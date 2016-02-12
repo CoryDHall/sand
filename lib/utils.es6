@@ -19,9 +19,9 @@
       if (!evtHandler) return;
       return (e => {
         let eCopy = {};
-        eCopy.offsetX = e.offsetX === undefined ? e.targetTouches.item(0).clientX : e.offsetX;
-        eCopy.offsetY = e.offsetY === undefined ? e.targetTouches.item(0).clientY : e.offsetY;
-        eCopy.preventDefault = e.preventDefault.bind(e);
+        eCopy.prototype = e.prototype;
+        eCopy.offsetX = (e.offsetX || e.targetTouches.item(0).clientX) || 0;
+        eCopy.offsetY = (e.offsetY || e.targetTouches.item(0).clientY) || 0;
         return evtHandler(eCopy);
       });
     }
