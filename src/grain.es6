@@ -15,10 +15,15 @@
       this.weight = weight;
       this.color = color || new su.Color(0, 100, 50);
     }
-
     render(ctx) {
+      let sizeHalf = this.size / 2, [x, y] = this.position.toArray();
+      ctx.strokeStyle = `${this.color}`;
+      ctx.arc(x, y, this.size, 0, twoPi);
+      ctx.stroke();
+      ctx.closePath();
+      ctx.beginPath();
       ctx.fillStyle = `${this.color}`;
-      ctx.arc(...this.position.toArray(), this.size / 2, 0, twoPi);
+      ctx.arc(x, y, sizeHalf, 0, twoPi);
       ctx.fill();
     }
 

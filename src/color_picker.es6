@@ -43,19 +43,24 @@
       this._container.appendChild(this._hs);
       this._hsctx = this._hs.getContext('2d');
       this.updateHueField();
-      let mDown = false, oldOffset = 0;
+      let mDown = false, oldOffset = 0, timeout;
       su.addDragEvents(this._hs, {
         'move': (e => {
           if (!mDown) return;
           let cHue = this.offset = 360 - (e.offsetX / this._width * 360);
           this.updateHueField();
           this.updateValueField(cHue, 5);
+          timeout && clearTimeout(timeout);
+          timeout = setTimeout(()=> {
+            this.pickHue(5);
+          }, 100);
         }),
         'end': (e => {
-          if (oldOffset == this.offset) {
+          if (oldOffset === this.offset) {
             this.offset += (e.offsetX / this._width * 360);
           }
-          this.pickHue(e);
+          this.pickHue();
+          timeout && clearTimeout(timeout);
           mDown = false;
         }),
         'start': (e => {
@@ -81,11 +86,11 @@
       this._container.dispatchEvent(colorChangeEvt);
     }
 
-    pickHue(e) {
+    pickHue(res) {
       this.currHue = this.offset;
       this._color.hue(this.currHue);
       this.triggerEvent();
-      this.updateValueField(this.currHue);
+      this.updateValueField(this.currHue, res);
       this.updateHueField();
     }
 
@@ -96,14 +101,20 @@
       this._container.appendChild(this._vf);
       this._vfctx = this._vf.getContext('2d');
       this.updateValueField();
-      let mDown = false;
+      let mDown = false, timeout;
       su.addDragEvents(this._vf, {
         'end': (e => {
-          mDown = false
+          mDown = false;
+          timeout && clearTimeout(timeout);
           this.pickValue(e);
         }),
         'move': (e => {
-          if(mDown) this.selectValue(e);
+          if(mDown) {
+            timeout && clearTimeout(timeout);
+            timeout = setTimeout(()=> {
+              this.pickValue(e);
+            }, 50);
+          }
         }),
         'start': (e => {
           mDown = true;
@@ -116,13 +127,15 @@
       let unitY = this._vfctx.canvas.height / res;
       let cHue = hue === null ? this.currHue : hue;
       var currColor = new su.Color(cHue, 0, 0);
-      for (var s = 0; s <= 100; s+=100 / res) {
-        for (var l = 0; l <= 100; l+=100 / res) {
-          currColor.saturation(s).lightness((s + l) / 2);
-          this._vfctx.fillStyle = currColor.toString();
-          this._vfctx.fillRect(unitX * s / (100 / res), unitY * l / (100 / res), unitX + 1, unitY + 1);
+      requestAnimationFrame(()=>{
+        for (var s = 0; s <= 100; s+=100 / res) {
+          for (var l = 0; l <= 100; l+=100 / res) {
+            currColor.saturation(s).lightness((s + l) / 2);
+            this._vfctx.fillStyle = currColor.toString();
+            this._vfctx.fillRect(unitX * s / (100 / res), unitY * l / (100 / res), unitX + 1, unitY + 1);
+          }
         }
-      }
+      });
     }
 
     selectValue(e) {

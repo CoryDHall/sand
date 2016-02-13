@@ -3,7 +3,7 @@
 
   let su = Sand.Utils;
 
-  const bgRefresh = 0.2;
+  const bgRefresh = 0.5;
 
   let sv = Sand.View = class {
     constructor(container) {
@@ -70,7 +70,7 @@
         mouseDown = true;
         widthState['end'] = true;
         posState['end'] = true;
-        this._clearColor.alpha(bgRefresh / 5);
+        this._clearColor.alpha(bgRefresh);
         this._clearColor = this._clearColor.invert();
         this.grain.color = this._grainColor = this._grainColor.invert();
         widthState = su.doUntil(minWidth, _ => {
@@ -90,9 +90,9 @@
         mouseDown = false;
         widthState['end'] = true;
         posState['end'] = true;
-        this._clearColor.alpha(bgRefresh);
-        this._clearColor = this._clearColor.complement();
-        this.grain.color = this._grainColor = this._grainColor.complement();
+        this._clearColor.alpha(bgRefresh / 5);
+        this._clearColor = this._clearColor.invert();
+        this.grain.color = this._grainColor = this._grainColor.invert();
         widthState = su.doUntil(Math.round(trueWidth), _ => {
           this._width = Math.ceil((this._width * 20 + trueWidth) / 21);
           return this._width;
@@ -120,25 +120,47 @@
       this.cvs.addEventListener('mousemove', moveEvent);
       this.cvs.addEventListener('touchmove', moveEvent);
       requestAnimationFrame(this.draw.bind(this));
-      var counter = 0;
-      setInterval(_ => {
-        let gp = this._positiondelta, time = new Date(Date.now());
+      let counter = 0, time, ctx = this.ctx;
+      const sin = Math.sin, cos = Math.cos, PI = Math.PI;
+      requestAnimationFrame(function updateTime() {
+        time = new Date(Date.now());
+        requestAnimationFrame(updateTime);
+      });
+      setInterval(() => {
+        let gp = this._positiondelta;
         let num = time.getSeconds(), x = this._center.x, y = this._center.y;
         counter += counterAdvance;
-        counter *= (counter < 10000 * Math.PI);
-        this.ctx.beginPath();
-        this.ctx.moveTo(...this._center.toArray());
+        counter *= (counter < 10000 * PI);
+        ctx.beginPath();
+        ctx.moveTo(x, y);
         for(var i = -30; i <= 30; i+= 1 + 0 * 31 / (num + 1)) {
-          this.grain.position.y = (y + gp * Math.sin(i / 60 * counter));
+          let turn = PI * i / 120 * counter + counter / 10,sinI = sin(turn), cosI = cos(turn);
+          this.grain.position.y = y
+            + gp
+            * sinI;
+
           for (var j = -2; j <= 2; j++) {
-            this.grain.size = 7 + 3 * Math.cos(i / 60 * counter) + 3 * Math.sin(this._height - gp * i * j / 600 + counter + i);
-            this.grain.position.x = (x + (this._width / 2.25) * Math.cos(this._height - gp * i * j / 600 + counter + i));
-            this.ctx.translate((this._width / num / 30 + minWidth) * i, 10 * j);
+            let delY = 20 * j * sinI
+              , delX = (this._width / num / 30 + minWidth) * i * cosI;
+
+            this.grain.size = 12.1
+              + 5 * (cosI + sinI)
+              + 1 * sin(this._height - gp * j / 600 + counter + i);
+
+            this.grain.position.x = x
+              + gp
+              * cosI
+              + (this._width / 2.25)
+              * cosI
+              * cos(this._height - gp * i * j / 600 + counter + i);
+
+
+            ctx.translate(delX, delY);
             this.grain.color.rotate(j * (i + 30) / 10);
-            this.ctx.beginPath();
-            this.grain.render(this.ctx);
-            this.ctx.closePath();
-            this.ctx.translate((this._width / num / 30 + minWidth) * -i, 10 * -j);
+            ctx.beginPath();
+            this.grain.render(ctx);
+            ctx.closePath();
+            ctx.translate(-delX, -delY);
           }
         }
       }, 10);
